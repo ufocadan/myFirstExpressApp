@@ -1,11 +1,130 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .board {
+            display: flex;
+        }
+
+        .column {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .tasks {
+            list-style: none;
+            padding: 0;
+        }
+
+        .add-task-form {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-task-input {
+            flex: 1;
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        .add-task-btn {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .task {
+            /* ... (previous styles) */
+            cursor: grab;
+        }
+
+        .task:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div class="board">
+        <div class="column">
+            <h2>To Do</h2>
+            <div class="add-task-form">
+                <input type="text" id="newTask" class="add-task-input" placeholder="Enter task...">
+                <button onclick="addTask()" class="add-task-btn">Add Task</button>
+            </div>
+            <ul id="todo" class="tasks" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <!-- Existing tasks go here -->
+            </ul>
+        </div>
+        <div class="column">
+            <h2>To Do</h2>
+            <ul id="todo" class="tasks" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+        </div>
+        <div class="column">
+            <h2>In Progress</h2>
+            <ul id="inProgress" class="tasks" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+        </div>
+        <div class="column">
+            <h2>Done</h2>
+            <ul id="done" class="tasks" ondrop="drop(event)" ondragover="allowDrop(event)"></ul>
+        </div>
+    </div>
+
+    <script>
+      function allowDrop(event) {
+          event.preventDefault();
+      }
+  
+      function drag(event) {
+          event.dataTransfer.setData("text", event.target.id);
+      }
+  
+      function drop(event) {
+          event.preventDefault();
+          var data = event.dataTransfer.getData("text");
+          var draggedElement = document.getElementById(data);
+          var targetList = event.target.closest('.tasks');
+  
+          if (targetList) {
+              targetList.appendChild(draggedElement);
+          }
+      }
+  
+      function addTask() {
+          var newTaskInput = document.getElementById('newTask');
+          var taskText = newTaskInput.value.trim();
+  
+          if (taskText !== '') {
+              var newTask = document.createElement('li');
+              newTask.id = 'task' + Date.now(); // Unique ID for each task
+              newTask.className = 'task';
+              newTask.draggable = true;
+              newTask.innerHTML = taskText;
+  
+              // Add drag-and-drop listeners
+              newTask.addEventListener('dragstart', drag);
+              newTask.addEventListener('dragover', allowDrop);
+              newTask.addEventListener('drop', drop);
+  
+              document.getElementById('todo').appendChild(newTask);
+              newTaskInput.value = ''; // Clear input field
+          }
+      }
+  </script>
+
+</body>
 </html>
